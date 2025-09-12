@@ -4,6 +4,7 @@ const {
   userRegister,
   userLogin,
   userProfile,
+  logoutUser,
 } = require("../controllers/user.controller");
 const authUser = require("../middlewares/auth.middleware");
 const router = express.Router();
@@ -37,5 +38,6 @@ router.post(
 );
 
 router.get("/profile", authUser, userProfile);
+router.get("/logout", authUser, logoutUser);
 
 module.exports = router;

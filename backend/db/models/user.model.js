@@ -2,9 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const { Schema } = mongoose;
-
-const userSchema = new Schema({
+const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
     required: true,
@@ -32,10 +30,9 @@ const userSchema = new Schema({
 
 // Instance method → available on document instances
 userSchema.methods.generateAuthToken = function () {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) throw new Error("JWT_SECRET is not defined");
-
-  const token = jwt.sign({ _id: this._id }, secret);
+  const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: "24h",
+  });
   return token;
 };
 
@@ -49,6 +46,5 @@ userSchema.statics.hashPassword = async function (password) {
 };
 
 const User = mongoose.model("User", userSchema);
-
 
 module.exports = User;
