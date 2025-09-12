@@ -4,6 +4,7 @@ const express = require("express");
 const connectToDb = require("./db/db");
 const userRoutes = require("./routes/user.routes");
 dotenv.config();
+const cookie = require("cookie-parser");
 
 const app = express();
 
@@ -14,6 +15,7 @@ connectToDb();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookie);
 
 // Routes
 app.get("/", (req, res) => {
