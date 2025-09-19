@@ -11,6 +11,11 @@ async function userRegister(req, res, next) {
 
   const { firstName, lastName, email, password } = req.body;
 
+  const isUserAlready = await User.findOne({ email })
+  if (isUserAlready) {
+    return res.status(400).json({message : "user already exist"})
+  }
+
   const hashedPassword = await User.hashPassword(password);
   const user = await createUser(firstName, lastName, email, hashedPassword);
 
@@ -23,7 +28,6 @@ async function userLogin(req, res, next) {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-
   const { email, password } = req.body;
   const user = await User.findOne({ email }).select("+password");
 
@@ -41,10 +45,13 @@ async function userProfile(req, res, next) {
 }
 
 async function logoutUser(req, res) {
-  res.clearCookie("token");
-  const token = req.cookie.token || req.headers.authorization?.split(" ")[1];
+  const token = req.cookies?.token || req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    res.status(400).json({ message: "no token provided" });
+  }
 
   await blackListTokenModel.create({ token });
+  res.clearCookie("token");
   return res.status(200).json({ message: "Logged out" });
 }
 

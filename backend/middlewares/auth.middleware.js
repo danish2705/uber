@@ -1,3 +1,4 @@
+const blackListTokenModel = require("../db/models/blackListToken.model");
 const User = require("../db/models/user.model");
 const jwt = require("jsonwebtoken");
 
@@ -6,7 +7,7 @@ const authUser = async (req, res, next) => {
   if (!token) {
     return res.status(401).json({ message: "Unauthorized" });
   }
-  const isBlackListed = await User.findOne({ token });
+  const isBlackListed = await blackListTokenModel.findOne({ token });
   if (isBlackListed) {
     return res.status(401).json({ message: "Unauthorized" });
   }
