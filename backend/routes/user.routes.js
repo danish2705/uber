@@ -6,7 +6,7 @@ const {
   userProfile,
   logoutUser,
 } = require("../controllers/user.controller");
-const authUser = require("../middlewares/auth.middleware");
+const { authUser } = require("../middlewares/auth.middleware");
 const router = express.Router();
 
 router.post(

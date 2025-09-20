@@ -11,9 +11,9 @@ async function userRegister(req, res, next) {
 
   const { firstName, lastName, email, password } = req.body;
 
-  const isUserAlready = await User.findOne({ email })
+  const isUserAlready = await User.findOne({ email });
   if (isUserAlready) {
-    return res.status(400).json({message : "user already exist"})
+    return res.status(400).json({ message: "user already exist" });
   }
 
   const hashedPassword = await User.hashPassword(password);
