@@ -5,7 +5,7 @@ const connectToDb = require("./db/db");
 const userRoutes = require("./routes/user.routes");
 dotenv.config();
 const cookie = require("cookie-parser");
-const captainRoutes = require("./routes/captain.routes")
+const captainRoutes = require("./routes/captain.routes");
 
 const app = express();
 
@@ -20,6 +20,6 @@ app.use(cookie());
 
 // Routes
 app.use("/users", userRoutes);
-app.use("/captains", captainRoutes)
+app.use("/captains", captainRoutes);
 
 module.exports = app;

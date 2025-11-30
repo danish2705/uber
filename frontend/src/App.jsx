@@ -1,9 +1,12 @@
 import { Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
+import Start from "./pages/Start";
 import UserLogin from "./pages/UserLogin";
 import UserSignUp from "./pages/UserSignUp";
 import CaptainLogin from "./pages/CaptainLogin";
 import CaptainSignUp from "./pages/CaptinSignUp";
+import Home from "./pages/Home";
+import ProtectedPage from "./pages/ProtectedPage";
+import UserLogout from "./pages/UserLogout";
 
 function App() {
   return (
@@ -14,11 +17,22 @@ function App() {
         alt="uber"
       />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Start />} />
         <Route path="/login" element={<UserLogin />} />
         <Route path="/signup" element={<UserSignUp />} />
         <Route path="/captain-login" element={<CaptainLogin />} />
         <Route path="/captain-signup" element={<CaptainSignUp />} />
+        <Route
+          path="/home"
+          element={
+            <ProtectedPage>
+              <Home />
+            </ProtectedPage>
+          }
+        />
+        <Route path="/user/logout" element={<ProtectedPage>
+          <UserLogout/>
+        </ProtectedPage> } />
       </Routes>
     </div>
   );

@@ -1,18 +1,55 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { UserDataContext } from "../context/UserContext";
+import axios from "axios";
 
 function UserLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userData, setUserData] = useState({});
-  const submitHandler = (e) => {
+  const { user, setUser } = useContext(UserDataContext);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const [errMsg, setErrMsg] = useState("");
+
+  const submitHandler = async (e) => {
     e.preventDefault();
-    setUserData({
+    if (loading) true;
+    setLoading(true);
+
+    const user = {
       email,
       password,
-    });
-    setEmail("");
-    setPassword("");
+    };
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/users/login`,
+        user
+      );
+
+      if (res?.status == 200 || res?.status == 201) {
+        const data = res.data;
+        setUser(data.user ?? data);
+
+        setEmail("");
+        setPassword("");
+        localStorage.setItem("token", data.token)
+        navigate("/home");
+      } else {
+        setErrMsg("login failed - unexpected resopnse");
+      }
+    } catch (error) {
+      const errors = error?.response?.data?.error;
+      if (Array.isArray(errors)) {
+        setErrMsg(errors.map((x) => x.msg).join(". "));
+      } else {
+        setErrMsg(
+          error?.response?.data?.error || error?.message || "Signin Failed"
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <div className="p-7 flex flex-col justify-between h-screen">

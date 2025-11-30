@@ -1,27 +1,66 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { UserDataContext } from "../context/UserContext.jsx";
+import axios from "axios";
 
 function UserSignUp() {
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
-  const [userData, setUserData] = useState({});
-  const submitHandler = (e) => {
+  const { user, setUser } = useContext(UserDataContext);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const submitHandler = async (e) => {
     e.preventDefault();
-    setUserData({
-      fullName: {
-        firstName,
-        lastName,
-      },
+    if (loading) return; 
+
+    setErrorMsg("");
+    setLoading(true);
+
+    const newUser = {
+      firstName,
+      lastName,
       email,
       password,
-    });
-    setEmail("");
-    setPassword("");
-    setFirstName("");
-    setLastName("");
+    };
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/users/register`,
+        newUser
+      );
+
+      if (res?.status === 201 || res?.status === 200) {
+        const data = res.data;
+        setUser(data.user ?? data);
+
+        // clear form
+        setEmail("");
+        setPassword("");
+        setFirstName("");
+        setLastName("");
+        localStorage.setItem("token", data.token)
+        navigate("/home");
+      } else {
+        setErrorMsg("Signup failed - unexpected response");
+      }
+    } catch (err) {
+      const errors = err?.response?.data?.errors;
+      if (Array.isArray(errors)) {
+        setErrorMsg(errors.map((x) => x.msg).join(". "));
+      } else {
+        setErrorMsg(
+          err?.response?.data?.message || err?.message || "Signup failed"
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
   };
+
   return (
     <div className="p-7 flex flex-col justify-between h-screen">
       <div>
@@ -45,6 +84,7 @@ function UserSignUp() {
               onChange={(e) => setLastName(e.target.value)}
             />
           </div>
+
           <h3 className="text-xl font-medium mb-2">What's your email</h3>
           <input
             required
@@ -54,6 +94,7 @@ function UserSignUp() {
             placeholder="email@example.com"
             onChange={(e) => setEmail(e.target.value)}
           />
+
           <h3 className="text-xl font-medium mb-2">Enter password</h3>
           <input
             required
@@ -63,26 +104,32 @@ function UserSignUp() {
             placeholder="password"
             onChange={(e) => setPassword(e.target.value)}
           />
+
+          {errorMsg && <p className="text-sm text-red-600 mb-3">{errorMsg}</p>}
+
           <button
-            className="bg-[#111] text-white font-semibold mb-7 rounded px-4 py-3 w-full cursor-pointer"
-            onClick={submitHandler}
+            type="submit"
+            className="bg-[#111] text-white font-semibold mb-7 rounded px-4 py-3 w-full cursor-pointer disabled:opacity-60"
+            disabled={loading}
           >
-            login
+            {loading ? "Creating account..." : "Create Account"}
           </button>
         </form>
+
         <p className="text-center">
           Already have account?{" "}
           <Link to="/login" className="text-blue-600">
             Login here
-          </Link>{" "}
+          </Link>
         </p>
       </div>
+
       <div>
         <div>
           <p className="text-xs">
-            By proceeding, you consent to get calls, Whatsapp or sms including
-            bu automated means, form Uber and its affiliates to the number
-            provided
+            By proceeding, you consent to receive calls, WhatsApp messages, or
+            SMS (including automated messages) from Uber and its affiliates to
+            the number provided.
           </p>
         </div>
       </div>
