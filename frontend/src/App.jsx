@@ -5,8 +5,11 @@ import UserSignUp from "./pages/UserSignUp";
 import CaptainLogin from "./pages/CaptainLogin";
 import CaptainSignUp from "./pages/CaptinSignUp";
 import Home from "./pages/Home";
-import ProtectedPage from "./pages/ProtectedPage";
+import ProtectedPage from "./pages/UserProtected";
 import UserLogout from "./pages/UserLogout";
+import CaptainHome from "./pages/CaptainHome";
+import CaptainProtected from "./pages/CaptainProtected";
+import CaptainLogout from "./pages/CaptainLogout";
 
 function App() {
   return (
@@ -30,9 +33,31 @@ function App() {
             </ProtectedPage>
           }
         />
-        <Route path="/user/logout" element={<ProtectedPage>
-          <UserLogout/>
-        </ProtectedPage> } />
+        <Route
+          path="/user/logout"
+          element={
+            <ProtectedPage>
+              <UserLogout />
+            </ProtectedPage>
+          }
+        />
+
+        <Route
+          path="/captain-home"
+          element={
+            <CaptainProtected>
+              <CaptainHome />
+            </CaptainProtected>
+          }
+        />
+        <Route
+          path="/captain/logout"
+          element={
+            <CaptainProtected>
+              <CaptainLogout />
+            </CaptainProtected>
+          }
+        />
       </Routes>
     </div>
   );

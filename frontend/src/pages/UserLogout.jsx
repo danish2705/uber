@@ -21,9 +21,9 @@ function UserLogout() {
       }
     };
     logout();
-  }, []);
+  }, [navigate, token]);
 
-  return <div>logiout ...</div>;
+  return <div>logout ...</div>;
 }
 
 export default UserLogout;
