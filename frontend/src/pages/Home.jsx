@@ -10,6 +10,8 @@ function Home() {
   const [panelOpen, setPanelOpen] = useState(false);
   const panelRef = useRef(null);
   const panelCloseRef = useRef(null);
+  const [vehiclePanel, setVehiclePanel] = useState(false);
+  const vehiclePanelRef = useRef(null);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -36,9 +38,24 @@ function Home() {
     [panelOpen]
   );
 
+  useGSAP(
+    function () {
+      if (vehiclePanel) {
+        gsap.to(vehiclePanelRef.current, {
+          transform: "translateY(0)",
+        });
+      } else {
+        gsap.to(vehiclePanelRef.current, {
+          transform: "translateY(100%)",
+        });
+      }
+    },
+    [vehiclePanel]
+  );
+
   return (
     <div className="relative h-screen overflow-hidden">
-      <div className="w-screen h-screen">
+      <div onClick={() => setVehiclePanel(false)} className="w-screen h-screen">
         <img
           className="h-full w-full"
           alt="alternate image"
@@ -75,10 +92,16 @@ function Home() {
           </form>
         </div>
         <div ref={panelRef} className="h-[0%] bg-white overflow-hidden">
-          <LocationSearchPanel />
+          <LocationSearchPanel
+            setVehiclePanel={setVehiclePanel}
+            setPanelOpen={setPanelOpen}
+          />
         </div>
       </div>
-      <div className="fixed z-10 bg-white bottom-0 px-3 py-6 w-full translate-y-full">
+      <div
+        ref={vehiclePanelRef}
+        className="fixed z-10 bg-white bottom-0 px-3 py-6 w-full translate-y-full"
+      >
         <h3 className="text-2xl font-semibold mb-2">Choose a vehicle</h3>
         <div className="flex items-center border-transparent hover:border-gray-900 justify-between border-2 active:border-black bg-gray-100 rounded-xl mb-2">
           <img
@@ -146,3 +169,4 @@ function Home() {
 }
 
 export default Home;
+508
